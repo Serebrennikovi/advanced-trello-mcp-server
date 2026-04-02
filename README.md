@@ -1,7 +1,7 @@
 # 🚀 Advanced Trello MCP Server
 
-> **Enhanced Model Context Protocol Server for Trello integration with Cursor AI**  
-> Complete API coverage with 40+ tools and enterprise-grade features
+> **Enhanced Model Context Protocol Server for Trello integration with Cursor AI**
+> 35 tools across Boards, Lists, Cards, Labels, and Actions APIs
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![Trello API](https://img.shields.io/badge/Trello%20API-Complete-green.svg)](https://developer.atlassian.com/cloud/trello/rest/)
@@ -18,11 +18,11 @@ This is an **enhanced version** of the Trello MCP Server that provides comprehen
 
 ## ✨ Features
 
-### 🎯 **Complete API Coverage**
-- **Actions API**: 16 tools (Complete audit trail, reactions, comments)
-- **Lists API**: 9 tools (Complete list management)
-- **Cards API**: 8 tools (Enhanced card operations)
-- **Labels API**: 8 tools (Complete label management) ✅
+### 🎯 **API Coverage (35 tools)**
+- **Lists API**: 10 tools (Complete list management)
+- **Cards API**: 12 tools (Enhanced card operations + attachments)
+- **Labels API**: 8 tools (Complete label management)
+- **Actions API**: 4 tools (Action read/write)
 - **Boards API**: 1 tool (Basic board access)
 
 ### 🔧 **Enterprise Features**
@@ -94,16 +94,19 @@ This is an **enhanced version** of the Trello MCP Server that provides comprehen
 - `archive-all-cards-in-list` - Archive all cards in list
 - `move-all-cards-in-list` - Move all cards between lists
 
-### 🎯 **Cards Management (9 tools)**
+### 🎯 **Cards Management (12 tools)**
 - `create-card` - Create single card
 - `create-cards` - Create multiple cards (batch)
-- `update-card` - Update card description and/or name
+- `update-card` - Update card name and/or description
 - `move-card` - Move card between lists
 - `move-cards` - Move multiple cards (batch)
 - `archive-card` - Archive single card
 - `archive-cards` - Archive multiple cards (batch)
 - `get-tickets-by-list` - Get cards from specific list
 - `add-comment` - Add comment to card
+- `add-comments` - Add comments to multiple cards (batch)
+- `get-card-attachments` - Get attachment list for a card
+- `download-card-attachments` - Download card attachments to disk
 
 ### 🏷️ **Labels Management (8 tools)** ✅ **COMPLETE**
 - `create-label` - Create single label
@@ -115,62 +118,25 @@ This is an **enhanced version** of the Trello MCP Server that provides comprehen
 - `delete-label` - Delete label by ID
 - `update-label-field` - Update specific label field
 
-### 📊 **Actions & Audit (16 tools)**
+### 📊 **Actions (4 tools)**
 - `get-action` - Get detailed action information
 - `update-action` - Update action (comments)
 - `delete-action` - Delete action (comments only)
-- `get-action-field` - Get specific action field
-- `get-action-board` - Get board from action
-- `get-action-card` - Get card from action
-- `get-action-list` - Get list from action
-- `get-action-member` - Get member from action
-- `get-action-member-creator` - Get action creator
-- `get-action-organization` - Get organization from action
-- `update-comment-action` - Update comment text
 - `get-action-reactions` - Get action reactions
-- `create-action-reaction` - Add reaction to action
-- `get-action-reaction` - Get specific reaction
-- `delete-action-reaction` - Remove reaction
-- `get-action-reactions-summary` - Get reactions summary
 
 ### 🏢 **Boards Management (1 tool)**
 - `get-boards` - Get all accessible boards
 
 ## 📈 Roadmap
 
-This project follows a strategic 6-phase expansion plan to achieve **100% Trello API coverage**:
+Current: **35 tools**. Planned additions — see `docs/2. specifications/S01_gap_closure.md`:
 
-### **Phase 1: Foundation** (In Progress - 1/3 Complete)
-- ✅ Complete Lists API (9 tools)
-- ✅ Complete Actions API (16 tools)
-- ✅ Complete Labels API (8 tools) **DONE!**
-- 🔄 Enhanced Cards API (15 more tools needed)
-- 🔄 Enhanced Boards API (8 more tools needed)
+- `get-card-comments` — read card comments by cardId
+- `due`/`start` support in `update-card`
+- Restore 12 lost action-tools (traversal, reaction CRUD)
+- Handler unification via `trelloGet/Post/Put/Delete`
 
-### **Phase 2: Productivity** (Planned)
-- Checklists API (12 tools)
-- Search API (3 tools)
-- Emoji API (2 tools)
-
-### **Phase 3: Collaboration** (Planned)
-- Members API (20 tools)
-- Organizations API (15 tools)
-
-### **Phase 4: Automation** (Planned)
-- Batch API (3 tools)
-- CustomFields API (12 tools)
-- Webhooks API (8 tools)
-
-### **Phase 5: Advanced Management** (Planned)
-- Notifications API (10 tools)
-- Plugins API (8 tools)
-- Tokens API (6 tools)
-
-### **Phase 6: Enterprise** (Planned)
-- Enterprises API (12 tools)
-- Applications API (4 tools)
-
-**Target: 182 total tools** (currently at 44)
+**Target after gap closure: 48 tools**
 
 ## 🔧 Development
 
@@ -270,11 +236,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📊 Stats
 
-- **Total Tools**: 44 (vs 15 original)
-- **API Coverage**: ~40% (target: 100%)
+- **Total Tools**: 35
 - **Lines of Code**: 2,500+ TypeScript
 - **Type Safety**: 100% with Zod validation
-- **Documentation**: Comprehensive inline docs
 
 ---
 

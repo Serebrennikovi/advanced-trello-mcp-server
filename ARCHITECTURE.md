@@ -1,45 +1,50 @@
-# 🏗️ Arquitectura Modular - Advanced Trello MCP Server
+# Architecture — Advanced Trello MCP Server
 
-## 📁 Estructura del Proyecto
+## Project Structure
 
 ```
 src/
-├── index.ts                    # 🚀 Punto de entrada del MCP Server
+├── index.ts                    # MCP Server entry point + 3 resources
 ├── types/
-│   └── common.ts              # 🔧 Tipos TypeScript comunes
+│   └── common.ts               # Shared TypeScript types
 ├── utils/
-│   └── api.ts                 # 🛠️ Utilidades para llamadas API
-└── tools/                     # 📦 Módulos de herramientas por API
-    ├── boards.ts              # 🏁 Boards API (1 herramienta)
-    ├── lists.ts               # 📋 Lists API (9 herramientas)
-    ├── cards.ts               # 🎫 Cards API (10 herramientas)
-    ├── labels.ts              # 🏷️ Labels API (8 herramientas)
-    └── actions.ts             # ⚡ Actions API (4+ herramientas)
+│   └── api.ts                  # HTTP helpers and reliability layer
+└── tools/                      # Tool modules by Trello API area
+    ├── boards.ts               # Boards API (1 tool)
+    ├── lists.ts                # Lists API (10 tools)
+    ├── cards.ts                # Cards API (12 tools)
+    ├── labels.ts               # Labels API (8 tools)
+    └── actions.ts              # Actions API (4 tools)
 ```
 
-## 🎯 Principios de la Arquitectura
+**Current tool count: 35**
 
-### 1. **Separación de Responsabilidades**
-- **`index.ts`**: Solo punto de entrada y configuración del servidor
-- **`tools/`**: Cada API de Trello en su propio módulo
-- **`types/`**: Definiciones TypeScript reutilizables
-- **`utils/`**: Funciones auxiliares compartidas
+---
 
-### 2. **Modularidad por Funcionalidad**
-Cada módulo de `tools/` agrupa herramientas relacionadas:
+## Architecture Principles
+
+### 1. Separation of Concerns
+
+- **`index.ts`** — server init, credentials, tool module registration, and 3 MCP resources (`board-info`, `lists-info`, `cards-info`) that make direct Trello API calls
+- **`tools/`** — one module per Trello API area
+- **`types/`** — shared TypeScript interfaces and Zod enums
+- **`utils/`** — shared HTTP helpers
+
+### 2. Modularity by API Area
+
+Each module in `tools/` exports a single `register*Tools` function:
 
 ```typescript
 // tools/labels.ts
 export function registerLabelsTools(server: McpServer, credentials: TrelloCredentials) {
-    // 8 herramientas de Labels API
     server.tool('create-label', ...);
     server.tool('get-label', ...);
-    server.tool('update-label', ...);
     // ...
 }
 ```
 
-### 3. **Tipos Centralizados**
+### 3. Centralized Types
+
 ```typescript
 // types/common.ts
 export interface TrelloCredentials {
@@ -50,70 +55,67 @@ export interface TrelloCredentials {
 export const TrelloColorEnum = z.enum(['yellow', 'purple', 'blue', ...]);
 ```
 
-### 4. **Utilidades Reutilizables**
-```typescript
-// utils/api.ts
-export async function trelloGet(endpoint: string, credentials: TrelloCredentials) {
-    // Lógica común para GET requests
-}
+### 4. HTTP Helpers
+
+`utils/api.ts` has two layers:
+
+**Reliability layer** (used by all handlers):
+- `fetchWithRetry` — keep-alive HTTPS agent, sliding window rate limiter (80 req/10s), exponential backoff with jitter, 60s timeout
+
+**High-level wrappers** (partially used):
+- `trelloGet`, `trelloPost`, `trelloPut`, `trelloDelete` — wrap credentials validation, URL construction, `fetchWithRetry`, JSON parsing, and response formatting
+- `createTrelloUrl`, `validateCredentials`, `createSuccessResponse`, `createErrorResponse`
+
+Most handlers currently call `fetchWithRetry` directly and duplicate boilerplate (credentials check, URL construction, response formatting). Migration to `trelloGet/Post/Put/Delete` is planned (T03).
+
+---
+
+## File Sizes (current)
+
+```
+src/index.ts              99 lines
+src/types/common.ts       ~60 lines
+src/utils/api.ts          356 lines
+src/tools/boards.ts       92 lines
+src/tools/lists.ts        539 lines
+src/tools/cards.ts        780 lines
+src/tools/labels.ts       427 lines
+src/tools/actions.ts      249 lines
 ```
 
-## 📊 Beneficios de la Modularización
+---
 
-### ✅ **Mantenibilidad**
-- Cada API es independiente y fácil de mantener
-- Cambios en una API no afectan otras
-- Código más legible y organizado
+## History
 
-### ✅ **Escalabilidad** 
-- Fácil agregar nuevas APIs (Boards, Members, Organizations)
-- Cada módulo puede crecer independientemente
-- Preparado para 182 herramientas totales
+### Before (monolithic)
 
-### ✅ **Colaboración**
-- Múltiples desarrolladores pueden trabajar en APIs diferentes
-- Conflictos de merge minimizados
-- Responsabilidades claras por módulo
-
-### ✅ **Testing**
-- Tests unitarios por módulo
-- Mocking más sencillo
-- Cobertura específica por API
-
-### ✅ **Performance**
-- Lazy loading posible en el futuro
-- Imports optimizados
-- Bundle splitting preparado
-
-## 🔄 Migración Realizada
-
-### Antes (Monolítico)
 ```
 src/
-└── index.ts (2,408 líneas, 50KB)
-    ├── 44 herramientas mezcladas
-    ├── Tipos inline
-    ├── Lógica API duplicada
-    └── Difícil de mantener
+└── index.ts  (2,408 lines)
+    ├── 44 tools mixed together
+    ├── inline types
+    └── duplicated API logic
 ```
 
-### Después (Modular)
-```
-src/
-├── index.ts (114 líneas, 3KB) ✨
-├── types/common.ts (60 líneas)
-├── utils/api.ts (149 líneas)
-└── tools/ (5 módulos especializados)
-    ├── boards.ts (46 líneas)
-    ├── lists.ts (539 líneas)
-    ├── cards.ts (521 líneas)
-    ├── labels.ts (427 líneas)
-    └── actions.ts (249 líneas)
-```
+The original monolith is preserved at `src/index.original.ts`.
 
-## 🚀 Cómo Agregar Nuevas APIs
+### After modular refactor (b6afe55, June 2025)
 
-### 1. Crear Módulo
+Modular structure was introduced. During the refactor 12 action-tools were not migrated from the monolith — the tool count dropped from 44 to 32. Documentation was not updated to reflect this.
+
+### Since then
+
+| Date | Change | Count |
+| --- | --- | --- |
+| Feb 2026 | `update-card` added | 33 |
+| Mar 2026 | reliability layer, `get-card-attachments`, `download-card-attachments` | 35 |
+
+---
+
+## Adding New APIs
+
+### 1. Create module
+
 ```typescript
 // src/tools/members.ts
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -121,72 +123,46 @@ import { TrelloCredentials } from '../types/common.js';
 
 export function registerMembersTools(server: McpServer, credentials: TrelloCredentials) {
     server.tool('get-member', ...);
-    server.tool('update-member', ...);
-    // ...
 }
 ```
 
-### 2. Registrar en Index
+### 2. Register in index
+
 ```typescript
 // src/index.ts
 import { registerMembersTools } from './tools/members.js';
-
-// ...
 registerMembersTools(server, credentials);
 ```
 
-### 3. Compilar y Probar
+### 3. Build
+
 ```bash
 npm run build
-npm run dev
 ```
-
-## 📈 Roadmap de Expansión
-
-Con esta arquitectura modular estamos preparados para:
-
-### **Fase 2 - Boards API Completa** (8 herramientas)
-- `tools/boards.ts` → Expandir con todas las herramientas
-
-### **Fase 3 - Members API** (12 herramientas)
-- `tools/members.ts` → Nuevo módulo
-
-### **Fase 4 - Organizations API** (15 herramientas)
-- `tools/organizations.ts` → Nuevo módulo
-
-### **Fase 5 - Advanced APIs** (100+ herramientas)
-- `tools/checklists.ts`
-- `tools/search.ts`
-- `tools/webhooks.ts`
-- `tools/customfields.ts`
-
-## 🔧 Herramientas de Desarrollo
-
-### Compilación
-```bash
-npm run build     # Compila TypeScript → JavaScript
-npm run dev       # Modo desarrollo con watch
-```
-
-### Estructura de Archivos
-```bash
-# Backup del archivo original
-src/index.original.ts   # Archivo monolítico original (2,408 líneas)
-
-# Nueva estructura modular
-src/index.ts           # Punto de entrada limpio (114 líneas)
-src/tools/            # Módulos especializados
-src/types/            # Tipos reutilizables
-src/utils/            # Utilidades comunes
-```
-
-## 🎉 Resultado Final
-
-### **Estado Actual**: 44 herramientas distribuidas en 5 módulos
-### **Arquitectura**: Modular, escalable, mantenible
-### **Cobertura API**: ~40% de Trello API
-### **Preparado para**: 182 herramientas totales (100% cobertura)
 
 ---
 
-*Esta arquitectura modular es la base sólida para convertir el Advanced Trello MCP Server en la herramienta más completa para integración con Trello API.* 
+## Development Scripts
+
+```bash
+npm run build     # TypeScript compile + shebang injection
+npm run compile   # TypeScript compile only (no shebang)
+```
+
+---
+
+## Testing
+
+No automated tests exist. Verification is manual via MCP client or `npm run compile` for type checking.
+
+---
+
+## Roadmap
+
+Current: **35 tools** across 5 modules.
+
+Planned (see `docs/2. specifications/S01_gap_closure.md`):
+- Restore 12 lost action-tools → **48 tools**
+- Add `get-card-comments`
+- Add `due`/`start` to `update-card`
+- Migrate handlers to `trelloGet/Post/Put/Delete`
