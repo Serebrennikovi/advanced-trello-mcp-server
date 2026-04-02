@@ -1,5 +1,8 @@
 # T01_docs_housekeeping
 
+**Статус:** done
+**Завершено:** 2026-04-02
+
 ## Контекст
 
 Папка `docs/` создана 2026-04-02 и не закоммичена. `ARCHITECTURE.md` и `README.md` содержат устаревшие claims: count 44, несуществующий `npm run dev`, неверное описание `index.ts` и helpers.
@@ -30,17 +33,10 @@
 
 ## Acceptance criteria
 
-1. `git status` не показывает `docs/` как untracked
-2. `ARCHITECTURE.md` не содержит `44` и `npm run dev`
-3. `README.md` отражает актуальный список tools
+1. `git status` не показывает `docs/` как untracked ✅
+2. `ARCHITECTURE.md` не содержит `44` и `npm run dev` ✅
+3. `README.md` отражает актуальный список tools ✅
 
-## Верификация
+## Результат
 
-```bash
-git status
-grep "44\|npm run dev" ARCHITECTURE.md
-```
-
-## Какие документы обновить
-
-- `docs/CHANGELOG.md` — запись
+Коммит: `fad4c40` — 22 файла, docs/ закоммичена, ARCHITECTURE.md и README.md синхронизированы с кодом.

@@ -1,10 +1,10 @@
 # Передача работы: Trello MCP Server
 
-**Дата:** 2026-04-02  
-**Статус:** docs baseline created; history audit completed  
-**Архитектура:** см. [../ARCHITECTURE.md](../ARCHITECTURE.md)  
-**История:** см. [CHANGELOG.md](CHANGELOG.md)  
-**Последнее обновление:** 2026-04-02 — добавлена папка `docs/`, зафиксирован аудит истории `44 tools`, описан upstream drift
+**Дата:** 2026-04-02
+**Статус:** T01 done; T02–T04 в работе
+**Архитектура:** см. [../ARCHITECTURE.md](../ARCHITECTURE.md)
+**История:** см. [CHANGELOG.md](CHANGELOG.md)
+**Последнее обновление:** 2026-04-02 — T01 закрыт: docs/ закоммичена, ARCHITECTURE.md и README.md синхронизированы с кодом
 
 ---
 
@@ -21,7 +21,7 @@
 | Reliability layer | `done` | `fetchWithRetry`, keep-alive, timeout, rate-limit, retries |
 | Attachment workflow | `done` | `get-card-attachments`, `download-card-attachments` |
 | Автотесты | `missing` | в репозитории нет test suite и test config |
-| Операционная документация | `in progress` | `docs/` создана 2026-04-02, корневые `README` и `ARCHITECTURE` требуют синхронизации с кодом |
+| Операционная документация | `done` | `docs/` закоммичена, `README.md` и `ARCHITECTURE.md` синхронизированы с кодом (T01) |
 
 ### Важная историческая справка
 
@@ -39,7 +39,7 @@
 | --- | --- | --- |
 | `origin` и `fork` | важно | `origin` указывает на upstream `adriangrahldev/advanced-trello-mcp-server`, `fork` на личный форк `Serebrennikovi/advanced-trello-mcp-server` |
 | Drift веток | важно | по состоянию на 2026-04-02 `fork/main` отстает от `origin/main` на 5 коммитов |
-| Корневая документация | устарела частично | [../ARCHITECTURE.md](../ARCHITECTURE.md) и местами [../README.md](../README.md) содержат старые counts и старые claims |
+| Корневая документация | актуальна | синхронизирована в T01 (2026-04-02) |
 | `44 tools` | неактуально для модульного кода | это исторический count монолита, а не текущего state проекта |
 | Общие API-хелперы | внедрены частично | `src/utils/api.ts` содержит reusable helpers, но модули в основном используют только `fetchWithRetry`, а не весь набор оберток |
 
@@ -72,21 +72,14 @@
 
 ## Следующие шаги
 
-### Приоритет 1
+Спека: [2. specifications/S01_gap_closure.md](2.%20specifications/S01_gap_closure.md)
 
-| Задача | Почему |
-| --- | --- |
-| Синхронизировать fork/main с origin/main | upstream уже содержит полезные изменения, а форк отстает |
-| Решить судьбу 12 потерянных action-tools | сейчас audit/comment/reaction возможности урезаны относительно исторических `44` |
-| Синхронизировать [../ARCHITECTURE.md](../ARCHITECTURE.md) с реальным кодом | counts, file sizes и claims про helpers устарели |
-| Добавить прямой tool для чтения комментариев карточки | текущий API surface не умеет явно читать comments по `cardId` |
-
-### Приоритет 2
-
-| Задача | Почему |
-| --- | --- |
-| Решить, нужен ли возврат `due/start` в `update-card` | эта часть была в merged PR #3, но потерялась в более позднем upstream merge |
-| Добавить тесты или smoke-скрипты | сейчас нет regression safety net |
+| Задача | Файл | Статус |
+| --- | --- | --- |
+| T01: docs housekeeping | [Done/T01_docs_housekeeping_done.md](3.%20tasks/Done/T01_docs_housekeeping_done.md) | ✅ done |
+| T02: cards API improvements | [T02_cards_api_improvements.md](3.%20tasks/T02_cards_api_improvements.md) | в очереди |
+| T03: unify handlers | [T03_unify_handlers.md](3.%20tasks/T03_unify_handlers.md) | в очереди |
+| T04: restore 12 action-tools | [T04_restore_action_tools.md](3.%20tasks/T04_restore_action_tools.md) | в очереди |
 
 ---
 

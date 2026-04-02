@@ -1,5 +1,7 @@
 # S01_gap_closure
 
+**Задачи:** T01 ✅ | T02 ⬜ | T03 ⬜ | T04 ⬜
+
 ## Контекст
 
 База: локальная ветка `feat/reliability-batch-attachments` (поверх `fork/main` = `1d33124`).
