@@ -1,7 +1,7 @@
 # 🚀 Advanced Trello MCP Server
 
 > **Enhanced Model Context Protocol Server for Trello integration with Cursor AI**
-> 35 tools across Boards, Lists, Cards, Labels, and Actions APIs
+> 36 tools across Boards, Lists, Cards, Labels, and Actions APIs
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![Trello API](https://img.shields.io/badge/Trello%20API-Complete-green.svg)](https://developer.atlassian.com/cloud/trello/rest/)
@@ -18,9 +18,9 @@ This is an **enhanced version** of the Trello MCP Server that provides comprehen
 
 ## ✨ Features
 
-### 🎯 **API Coverage (35 tools)**
+### 🎯 **API Coverage (36 tools)**
 - **Lists API**: 10 tools (Complete list management)
-- **Cards API**: 12 tools (Enhanced card operations + attachments)
+- **Cards API**: 13 tools (Enhanced card operations + attachments + comments)
 - **Labels API**: 8 tools (Complete label management)
 - **Actions API**: 4 tools (Action read/write)
 - **Boards API**: 1 tool (Basic board access)
@@ -94,10 +94,10 @@ This is an **enhanced version** of the Trello MCP Server that provides comprehen
 - `archive-all-cards-in-list` - Archive all cards in list
 - `move-all-cards-in-list` - Move all cards between lists
 
-### 🎯 **Cards Management (12 tools)**
+### 🎯 **Cards Management (13 tools)**
 - `create-card` - Create single card
 - `create-cards` - Create multiple cards (batch)
-- `update-card` - Update card name and/or description
+- `update-card` - Update card name, description, due date, and/or start date
 - `move-card` - Move card between lists
 - `move-cards` - Move multiple cards (batch)
 - `archive-card` - Archive single card
@@ -105,6 +105,7 @@ This is an **enhanced version** of the Trello MCP Server that provides comprehen
 - `get-tickets-by-list` - Get cards from specific list
 - `add-comment` - Add comment to card
 - `add-comments` - Add comments to multiple cards (batch)
+- `get-card-comments` - Get comments for a card with optional filters
 - `get-card-attachments` - Get attachment list for a card
 - `download-card-attachments` - Download card attachments to disk
 
@@ -129,10 +130,8 @@ This is an **enhanced version** of the Trello MCP Server that provides comprehen
 
 ## 📈 Roadmap
 
-Current: **35 tools**. Planned additions — see `docs/2. specifications/S01_gap_closure.md`:
+Current: **36 tools**. Planned additions — see `docs/2. specifications/S01_gap_closure.md`:
 
-- `get-card-comments` — read card comments by cardId
-- `due`/`start` support in `update-card`
 - Restore 12 lost action-tools (traversal, reaction CRUD)
 - Handler unification via `trelloGet/Post/Put/Delete`
 
@@ -236,7 +235,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📊 Stats
 
-- **Total Tools**: 35
+- **Total Tools**: 36
 - **Lines of Code**: 2,500+ TypeScript
 - **Type Safety**: 100% with Zod validation
 

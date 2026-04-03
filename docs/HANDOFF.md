@@ -17,7 +17,7 @@
 | Компонент | Статус | Комментарий |
 | --- | --- | --- |
 | MCP server | `done` | `src/index.ts`, stdio transport, 3 resources |
-| Tool-set | `35 tools` | boards 1, lists 10, cards 12, labels 8, actions 4 |
+| Tool-set | `36 tools` | boards 1, lists 10, cards 13, labels 8, actions 4 |
 | Reliability layer | `done` | `fetchWithRetry`, keep-alive, timeout, rate-limit, retries |
 | Attachment workflow | `done` | `get-card-attachments`, `download-card-attachments` |
 | Автотесты | `missing` | в репозитории нет test suite и test config |
@@ -77,7 +77,7 @@
 | Задача | Файл | Статус |
 | --- | --- | --- |
 | T01: docs housekeeping | [Done/T01_docs_housekeeping_done.md](3.%20tasks/Done/T01_docs_housekeeping_done.md) | ✅ done |
-| T02: cards API improvements | [T02_cards_api_improvements.md](3.%20tasks/T02_cards_api_improvements.md) | в очереди |
+| T02: cards API improvements | [T02_cards_api_improvements_done.md](3.%20tasks/Done/T02_cards_api_improvements_done.md) | ✅ done |
 | T03: unify handlers | [T03_unify_handlers.md](3.%20tasks/T03_unify_handlers.md) | в очереди |
 | T04: restore 12 action-tools | [T04_restore_action_tools.md](3.%20tasks/T04_restore_action_tools.md) | в очереди |
 

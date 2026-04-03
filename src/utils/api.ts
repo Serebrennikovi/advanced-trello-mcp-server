@@ -273,6 +273,10 @@ export async function trelloGet(endpoint: string, credentials: TrelloCredentials
 
 		const url = createTrelloUrl(endpoint, credentials, params);
 		const response = await fetchWithRetry(url);
+		if (!response.ok) {
+			const errorText = await response.text();
+			return createErrorResponse(`Trello API error ${response.status}: ${errorText}`);
+		}
 		const data = await response.json();
 
 		return createSuccessResponse(data);
@@ -298,6 +302,10 @@ export async function trelloPost(endpoint: string, credentials: TrelloCredential
 			},
 			body: body ? JSON.stringify(body) : undefined,
 		});
+		if (!response.ok) {
+			const errorText = await response.text();
+			return createErrorResponse(`Trello API error ${response.status}: ${errorText}`);
+		}
 		const data = await response.json();
 
 		return createSuccessResponse(data);
@@ -323,6 +331,10 @@ export async function trelloPut(endpoint: string, credentials: TrelloCredentials
 			},
 			body: body ? JSON.stringify(body) : undefined,
 		});
+		if (!response.ok) {
+			const errorText = await response.text();
+			return createErrorResponse(`Trello API error ${response.status}: ${errorText}`);
+		}
 		const data = await response.json();
 
 		return createSuccessResponse(data);
@@ -347,6 +359,10 @@ export async function trelloDelete(endpoint: string, credentials: TrelloCredenti
 				'Content-Type': 'application/json',
 			},
 		});
+		if (!response.ok) {
+			const errorText = await response.text();
+			return createErrorResponse(`Trello API error ${response.status}: ${errorText}`);
+		}
 		const data = await response.json();
 
 		return createSuccessResponse(data);

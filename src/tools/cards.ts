@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { TrelloCredentials } from '../types/common.js';
-import { fetchWithRetry } from '../utils/api.js';
+import { fetchWithRetry, validateCredentials, createTrelloUrl } from '../utils/api.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -121,8 +121,10 @@ export function registerCardsTools(server: McpServer, credentials: TrelloCredent
 			cardId: z.string().describe('ID of the card to update'),
 			description: z.string().optional().describe('New description for the card (replaces existing). Use empty string to clear.'),
 			name: z.string().optional().describe('New name/title for the card'),
+			due: z.string().nullable().optional().describe('Due date as ISO 8601 datetime, or null to clear'),
+			start: z.string().nullable().optional().describe('Start date as ISO 8601 datetime, or null to clear'),
 		},
-		async ({ cardId, description, name }) => {
+		async ({ cardId, description, name, due, start }) => {
 			try {
 				if (!credentials.apiKey || !credentials.apiToken) {
 					return {
@@ -136,16 +138,18 @@ export function registerCardsTools(server: McpServer, credentials: TrelloCredent
 					};
 				}
 
-				const body: { desc?: string; name?: string } = {};
+				const body: { desc?: string; name?: string; due?: string | null; start?: string | null } = {};
 				if (description !== undefined) body.desc = description;
 				if (name !== undefined) body.name = name;
+				if (due !== undefined) body.due = due;
+				if (start !== undefined) body.start = start;
 
 				if (Object.keys(body).length === 0) {
 					return {
 						content: [
 							{
 								type: 'text',
-								text: 'At least one of description or name must be provided',
+								text: 'At least one of description, name, due, or start must be provided',
 							},
 						],
 						isError: true,
@@ -162,6 +166,10 @@ export function registerCardsTools(server: McpServer, credentials: TrelloCredent
 						body: JSON.stringify(body),
 					}
 				);
+				if (!response.ok) {
+					const errorText = await response.text();
+					return { content: [{ type: 'text' as const, text: `Trello API error ${response.status}: ${errorText}` }], isError: true };
+				}
 				const data = await response.json();
 				return {
 					content: [
@@ -646,6 +654,47 @@ export function registerCardsTools(server: McpServer, credentials: TrelloCredent
 				return { content: [{ type: 'text' as const, text: JSON.stringify(summary, null, 2) }] };
 			} catch (error) {
 				return { content: [{ type: 'text' as const, text: `Error getting attachments: ${error}` }], isError: true };
+			}
+		}
+	);
+
+	// GET /cards/{id}/actions?filter=commentCard - Get comments for a card
+	server.tool(
+		'get-card-comments',
+		{
+			cardId: z.string().describe('ID of the card to get comments from'),
+			limit: z.number().optional().describe('Maximum number of comments to return (default: 50)'),
+			since: z.string().optional().describe('Return comments after this ISO 8601 datetime'),
+			before: z.string().optional().describe('Return comments before this ISO 8601 datetime'),
+		},
+		async ({ cardId, limit = 50, since, before }) => {
+			try {
+				if (!validateCredentials(credentials)) {
+					return { content: [{ type: 'text' as const, text: 'Trello API credentials are not configured' }], isError: true };
+				}
+
+				const params: Record<string, string> = { filter: 'commentCard', limit: String(limit) };
+				if (since) params.since = since;
+				if (before) params.before = before;
+
+				const url = createTrelloUrl(`/cards/${cardId}/actions`, credentials, params);
+				const response = await fetchWithRetry(url);
+
+				if (!response.ok) {
+					const errorText = await response.text();
+					return { content: [{ type: 'text' as const, text: `Trello API error ${response.status}: ${errorText}` }], isError: true };
+				}
+
+				const data = await response.json();
+				const comments = (data as any[]).map((a: any) => ({
+					id: a.id,
+					date: a.date,
+					memberCreator: a.memberCreator,
+					text: a.data?.text,
+				}));
+				return { content: [{ type: 'text' as const, text: JSON.stringify(comments) }] };
+			} catch (error) {
+				return { content: [{ type: 'text' as const, text: `Error getting card comments: ${error}` }], isError: true };
 			}
 		}
 	);

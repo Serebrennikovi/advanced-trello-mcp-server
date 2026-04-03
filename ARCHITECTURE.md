@@ -12,12 +12,12 @@ src/
 └── tools/                      # Tool modules by Trello API area
     ├── boards.ts               # Boards API (1 tool)
     ├── lists.ts                # Lists API (10 tools)
-    ├── cards.ts                # Cards API (12 tools)
+    ├── cards.ts                # Cards API (13 tools)
     ├── labels.ts               # Labels API (8 tools)
     └── actions.ts              # Actions API (4 tools)
 ```
 
-**Current tool count: 35**
+**Current tool count: 36**
 
 ---
 
@@ -159,10 +159,8 @@ No automated tests exist. Verification is manual via MCP client or `npm run comp
 
 ## Roadmap
 
-Current: **35 tools** across 5 modules.
+Current: **36 tools** across 5 modules.
 
 Planned (see `docs/2. specifications/S01_gap_closure.md`):
 - Restore 12 lost action-tools → **48 tools**
-- Add `get-card-comments`
-- Add `due`/`start` to `update-card`
 - Migrate handlers to `trelloGet/Post/Put/Delete`
